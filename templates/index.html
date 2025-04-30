@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Word + Excel to PDF Generator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: white;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 500px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #38bdf8;
+    }
+    label {
+      display: block;
+      margin-top: 20px;
+    }
+    input[type="file"],
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      background: #334155;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      margin-top: 5px;
+    }
+    button {
+      width: 100%;
+      margin-top: 30px;
+      padding: 12px;
+      background: #38bdf8;
+      color: #0f172a;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #0ea5e9;
+    }
+    .output {
+      margin-top: 30px;
+      color: #67e8f9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Generate PDF from Word + Excel</h2>
+    <form id="uploadForm">
+      <label>Upload Word Template (.docx):</label>
+      <input type="file" name="wordFile" accept=".docx" required />
+
+      <label>Upload Excel File (.xlsx):</label>
+      <input type="file" name="excelFile" accept=".xlsx" />
+
+      <label>Or Enter Google Sheet URL:</label>
+      <input type="text" name="sheetURL" placeholder="https://docs.google.com/spreadsheets/d/..." />
+
+      <label>Sheet Name:</label>
+      <input type="text" name="sheetName" placeholder="Sheet1" />
+
+      <button type="submit">Generate PDFs</button>
+    </form>
+    <div class="output" id="outputMsg"></div>
+  </div>
+
+  <script>
+    document.getElementById("uploadForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      document.getElementById("outputMsg").textContent = "Processing... Please wait.";
+
+      try {
+        const res = await fetch("/process", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          document.getElementById("outputMsg").innerHTML =
+            "Download PDFs:<br>" +
+            data.files
+              .map(
+                (f) => `<a style="color:#a5f3fc" href="${f.url}" download>${f.name}</a><br>`
+              )
+              .join("");
+        } else {
+          document.getElementById("outputMsg").textContent = "Error: " + data.message;
+        }
+      } catch (err) {
+        document.getElementById("outputMsg").textContent = "Unexpected error occurred.";
+      }
+    });
+  </script>
+</body>
+</html>
