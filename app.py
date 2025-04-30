@@ -8,7 +8,7 @@ import requests
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
 UPLOAD_FOLDER = "uploads"
-OUTPUT_FOLDER = "C:/Users/Downloads/"
+OUTPUT_FOLDER = "C:/Users/%USERPROFILE%/Downloads/"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
